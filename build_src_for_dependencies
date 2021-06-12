@@ -1,0 +1,27 @@
+1. create buildSrc module at project
+
+2. add build.gradle.kts to module root
+
+	plugins {
+	    `kotlin-dsl`
+	}
+	repositories {
+	    google()
+	    mavenCentral()
+	}
+
+3. create src-main-java-Dependencies.kt directory and now you can add something like this to this file: 
+
+object Versions {
+    const val rxJavaVersion = "3.0.0"
+}
+
+object Dependencies {
+    const val rxJava = "io.reactivex.rxjava3:rxandroid:${Versions.rxJavaVersion}"
+}
+
+4. add dependencies to build.gradle file 
+
+dependencies {
+    implementation (Dependencies.rxJava)
+}
