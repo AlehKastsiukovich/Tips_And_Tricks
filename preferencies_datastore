@@ -1,0 +1,53 @@
+DataStore is a new and improved data storage solution aimed at replacing SharedPreferences. Built on Kotlin coroutines and Flow, DataStore provides two different implementations: Proto DataStore, that stores typed objects (backed by protocol buffers) and Preferences DataStore, that stores key-value pairs. Data is stored asynchronously, consistently, and transactionally, overcoming some of the drawbacks of SharedPreferences.
+
+Feature				SharedPreferences		 PreferencesDataStore		 ProtoDataStore
+save ui call		no							yes							yes
+
+signal errors		no							yes							yes
+
+Safe from 
+runtime exceptions	no							yes							yes
+
+Has a transactional no							yes							yes
+API with strong
+consistency guarantees
+
+Handles data 		no							yes							yes
+migration
+
+Type safety			no							no							yes
+
+
+
+						Preferences DataStore
+
+1. add dependency: implementation "androidx.datastore:datastore-preferences:version
+
+2. add dataStore variable to Activity. If we have old shared preference logic, we can migrate to Preferences DataStore.
+
+ private val Context.dataStore by preferencesDataStore(
+    name = USER_PREFERENCES_NAME,
+    produceMigrations = { context ->
+        // Since we're migrating from SharedPreferences, add a migration based on the
+        // SharedPreferences name
+        listOf(SharedPreferencesMigration(context, USER_PREFERENCES_NAME))
+    }
+)
+
+3. create object PreferencesKeys which will store the keys ex:
+
+private object PreferencesKeys {
+    val SORT_ORDER = stringPreferencesKey("sort_order")
+    val SHOW_COMPLETED = booleanPreferencesKey("show_completed")
+}
+
+4. to read data ex:
+dataStore.data.map { 
+	preferences -> val example = preferences[PreferencesKeys.SORT_ORDER]
+}
+
+5. to edit ex:
+dataStore.edit { preferences ->
+  	preferences[PreferencesKeys.SORT_ORDER] = new value
+}
+edit - suspend function
