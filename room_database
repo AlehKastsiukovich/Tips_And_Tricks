@@ -1,0 +1,48 @@
+Integrate room database to the project.
+
+1. add dependencies:
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+2.add Entity class:
+
+@Entity(tableName = "users_table")
+data class User(
+    @PrimaryKey(autoGenerate = false)
+    @NonNull
+    val id: Long? = null,
+    val name: String? = null,
+    val age: String? = null,
+    val number: String? = null,
+)
+
+3. add class which provide database:
+
+@Database(entities = [User::class],  version = 2)
+abstract class UserDatabase: RoomDatabase() {
+    abstract fun userDao(): UserDao
+    class Callback @Inject constructor(private val songDatabase: Provider<UserDatabase>, @ApplicationScope private val applicationScope: CoroutineScope) : androidx.room.RoomDatabase.Callback(){
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
+            val dao = songDatabase.get().userDao()
+            applicationScope.launch {
+            }
+        }
+    }
+}
+
+when your entity class updated version should increace.
+
+4. add dao-interface with crud
+
+@Dao
+interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertToRoomDatabase(user: User) : Long
+
+   
+    @Query("SELECT * FROM users_table ORDER BY id DESC")
+    fun getUserDetails() : Flow<List<User>>
+}
