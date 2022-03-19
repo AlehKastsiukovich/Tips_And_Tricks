@@ -12,3 +12,17 @@ class LocationFragment: Fragment() {
         }
     }
 }
+
+
+@Composable
+fun LocationScreen(locationFlow: Flow<Flow>) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val locationFlowLifecycleAware = remember(locationFlow, lifecycleOwner) {
+        locationFlow.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+    }
+
+    val location by locationFlowLifecycleAware.collectAsState()
+
+    // Current location, do something with it
+}
