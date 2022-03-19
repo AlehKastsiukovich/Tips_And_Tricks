@@ -1,0 +1,14 @@
+class LocationFragment: Fragment() {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+        
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            
+                locationProvider.locationFlow().collect {
+                    // e.g. New location! Update the map
+                }
+            }
+        }
+    }
+}
